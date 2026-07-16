@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Report Submitted — WeNotify Kenya</title>
+    <link rel="stylesheet" href="../static/css/bootstrap.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../static/css/style.css">
+</head>
+<body>
+
+    {% include 'nav-bar.html' %}
+
+    <section class="wn-hero" style="padding: 44px 0 56px;">
+        <div class="wn-container text-center">
+            <p class="eyebrow">Case filed</p>
+            <h1 style="font-size: clamp(2rem, 4vw, 3rem);">Report Submitted</h1>
+        </div>
+    </section>
+
+    <section class="wn-section" style="padding-top:40px;">
+        <div class="wn-container">
+            <div class="wn-panel wide">
+                <div class="wn-alert success" style="display:block;">
+                    Your report has been received. An officer will act on it shortly.
+                </div>
+
+                <div class="ticket" style="position:static; width:100%; box-shadow:none; margin-bottom:28px;">
+                    <span class="case-no">Reported by {{ username }} &middot; ID {{ user_id }}</span>
+                    <div style="font-family: var(--font-display); font-size:1.4rem; text-transform:none; margin:4px 0;">
+                        {{ event_desc }}
+                    </div>
+                    <span class="tag crime">{{ contact_on }} contact</span>
+                </div>
+
+                <div class="wn-row-2">
+                    <div class="wn-field">
+                        <label>Phone</label>
+                        <div>{{ phone }}</div>
+                    </div>
+                    <div class="wn-field">
+                        <label>Email</label>
+                        <div>{{ email }}</div>
+                    </div>
+                </div>
+
+                <div class="wn-row-2">
+                    <div class="wn-field">
+                        <label>County</label>
+                        <div>{{ county }}</div>
+                    </div>
+                    <div class="wn-field">
+                        <label>Location</label>
+                        <div>{{ location }}</div>
+                    </div>
+                </div>
+
+                <div class="wn-row-2">
+                    <div class="wn-field">
+                        <label>Date of event</label>
+                        <div>{{ event_date }}</div>
+                    </div>
+                    <div class="wn-field">
+                        <label>Gender</label>
+                        <div>{{ gender }}</div>
+                    </div>
+                </div>
+
+                <div class="wn-cta-row" style="margin-top:12px;">
+                    <a href="/home" class="btn btn-primary">File Another Report</a>
+                    <a href="/" class="btn btn-outline" style="color:var(--ink); border-color:var(--steel-line);">Back to Home</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    {% include 'footer.html' %}
+
+</body>
+</html>

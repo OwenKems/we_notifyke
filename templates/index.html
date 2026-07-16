@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WeNotify Kenya — Report an incident</title>
+    <link rel="stylesheet" href="../static/css/bootstrap.css">
+    <link rel="stylesheet" href="../static/css/lightslider.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../static/css/style.css">
+    <script src="../static/js/jquery.js"></script>
+    <script src="../static/js/bootstrap.bundle.min.js"></script>
+    <script src="../static/js/lightslider.js"></script>
+    <script src="../static/js/script.js"></script>
+</head>
+<body>
+
+    {% include 'nav-bar.html' %}
+
+    <section class="wn-hero">
+        <div class="wn-container wn-hero-grid">
+            <div>
+                <p class="eyebrow">Nairobi &middot; Kenya &middot; 24/7 reporting line</p>
+                <h1>See something wrong?<br><span class="accent">Notify us now.</span></h1>
+                <p class="lede">WeNotify Kenya routes your report straight to the nearest duty
+                    desk — no station visit, no waiting in line. Crime, fire, or a road
+                    accident: file it in under two minutes.</p>
+                <div class="wn-cta-row">
+                    <a href="/home" class="btn btn-primary">File a Report</a>
+                    <a href="#categories" class="btn btn-outline">What we cover</a>
+                </div>
+            </div>
+            <div class="ticket-stack">
+                <div class="ticket t1">
+                    <span class="case-no">CASE #KE-2291</span>
+                    <div>Reported break-in, Kilimani</div>
+                    <span class="tag crime">Crime</span>
+                </div>
+                <div class="ticket t2">
+                    <span class="case-no">CASE #KE-2292</span>
+                    <div>Accident on Thika Road</div>
+                    <span class="tag road">Road Accident</span>
+                </div>
+                <div class="ticket t3">
+                    <span class="case-no">CASE #KE-2293</span>
+                    <div>Grass fire near Ngong Forest</div>
+                    <span class="tag fire">Fire Outbreak</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="wn-ticker">
+        <div class="wn-container wn-ticker-row">
+            <span>Burglary</span>
+            <span>Murder Cases</span>
+            <span>Sexual Assault</span>
+            <span>Armed Robbery</span>
+            <span>Road Accidents</span>
+            <span>Fire Outbreaks</span>
+        </div>
+    </div>
+
+    <section class="wn-section" id="categories">
+        <div class="wn-container">
+            <p class="eyebrow text-center">What you can report</p>
+            <h2 class="text-center" style="margin-bottom:40px;">Three categories, one desk</h2>
+            <div class="wn-grid-3">
+                <div class="wn-card">
+                    <div class="wn-card-img">
+                        <span class="wn-card-tab">Crime</span>
+                        <img src="../static/images/murder.jpeg" alt="Community policing officers on patrol">
+                    </div>
+                    <div class="wn-card-body">
+                        <h4>Crime &amp; Public Safety</h4>
+                        <p>Burglary, assault, armed robbery — flag it the moment it happens
+                            so officers can respond while it still matters.</p>
+                    </div>
+                </div>
+                <div class="wn-card">
+                    <div class="wn-card-img">
+                        <span class="wn-card-tab">Road</span>
+                        <img src="../static/images/road accident.jpeg" alt="Road safety and accident response">
+                    </div>
+                    <div class="wn-card-body">
+                        <h4>Road Accidents</h4>
+                        <p>Kenya loses thousands of lives to road crashes every year. A fast
+                            report gets emergency crews on scene sooner.</p>
+                    </div>
+                </div>
+                <div class="wn-card">
+                    <div class="wn-card-img">
+                        <span class="wn-card-tab">Fire</span>
+                        <img src="../static/images/fire.jpeg" alt="Fire brigade responding to an outbreak">
+                    </div>
+                    <div class="wn-card-body">
+                        <h4>Fire Outbreaks</h4>
+                        <p>From a kitchen fire to a bush blaze — early reporting is the
+                            difference between a scare and a disaster.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    {% include 'carousel.html' %}
+
+    {% include 'footer.html' %}
+
+</body>
+</html>

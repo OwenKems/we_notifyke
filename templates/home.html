@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File a Report — WeNotify Kenya</title>
+    <link rel="stylesheet" href="../static/css/bootstrap.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../static/css/style.css">
+</head>
+<body>
+
+    {% include 'nav-bar.html' %}
+
+    <section class="wn-hero" style="padding: 44px 0 56px;">
+        <div class="wn-container text-center">
+            <p class="eyebrow">Case intake</p>
+            <h1 style="font-size: clamp(2rem, 4vw, 3rem);">File an Incident Report</h1>
+        </div>
+    </section>
+
+    <section class="wn-section" style="padding-top:40px;">
+        <div class="wn-container">
+            <div class="wn-panel wide">
+                <p class="eyebrow">Personal details</p>
+                <h2>Tell us what happened</h2>
+                <p class="sub">Every field below reaches the duty desk directly — be as
+                    specific as you can.</p>
+
+                {% if error %}<div class="wn-alert error">{{ error }}</div>{% endif %}
+                {% if success %}<div class="wn-alert success">{{ success }}</div>{% endif %}
+                {% if message %}<div class="wn-alert error">{{ message }}</div>{% endif %}
+
+                {% set formdata = formdata or {} %}
+                <form action="/home" method="post">
+                    <div class="wn-row-2">
+                        <div class="wn-field">
+                            <label for="username">Your name</label>
+                            <input type="text" id="username" placeholder="e.g. Jane Wanjiru" name="username" value="{{ formdata.username or '' }}">
+                        </div>
+                        <div class="wn-field">
+                            <label for="user_id">ID number</label>
+                            <input type="number" id="user_id" placeholder="National ID" maxlength="8" name="user_id" value="{{ formdata.user_id or '' }}">
+                        </div>
+                    </div>
+
+                    <div class="wn-row-2">
+                        <div class="wn-field">
+                            <label for="phone">Phone number</label>
+                            <input type="tel" id="phone" placeholder="2547XXXXXXXX" name="phone" value="{{ formdata.phone or '' }}">
+                        </div>
+                        <div class="wn-field">
+                            <label for="email">Email (optional)</label>
+                            <input type="email" id="email" placeholder="you@example.com" name="email" value="{{ formdata.email or '' }}">
+                        </div>
+                    </div>
+
+                    <div class="wn-field">
+                        <label for="event_desc">Describe what happened</label>
+                        <textarea name="event_desc" id="event_desc" rows="5" placeholder="Give as much detail as you can — what, where, when, who was involved">{{ formdata.event_desc or '' }}</textarea>
+                    </div>
+
+                    <div class="wn-field">
+                        <label for="file_upload">Photo of the scene (if any)</label>
+                        <input type="file" name="file_upload" id="file_upload">
+                    </div>
+
+                    <div class="wn-row-2">
+                        <div class="wn-field">
+                            <label for="gender">Your gender</label>
+                            <select name="gender" id="gender">
+                                <option value="" {{ 'selected' if not formdata.gender }}>~ Select ~</option>
+                                <option value="Male" {{ 'selected' if formdata.gender == 'Male' }}>Male</option>
+                                <option value="Female" {{ 'selected' if formdata.gender == 'Female' }}>Female</option>
+                            </select>
+                        </div>
+                        <div class="wn-field">
+                            <label for="event_date">Date it took place</label>
+                            <input type="date" name="event_date" id="event_date" value="{{ formdata.event_date or '' }}">
+                        </div>
+                    </div>
+
+                    <div class="wn-row-2">
+                        <div class="wn-field">
+                            <label for="county">County</label>
+                            <input type="text" id="county" name="county" placeholder="e.g. Nairobi" value="{{ formdata.county or '' }}">
+                        </div>
+                        <div class="wn-field">
+                            <label for="location">Location</label>
+                            <input type="text" id="location" name="location" placeholder="Estate, street or landmark" value="{{ formdata.location or '' }}">
+                        </div>
+                    </div>
+
+                    <div class="wn-field">
+                        <label for="contact_on">We can reach you on</label>
+                        <select name="contact_on" id="contact_on">
+                            <option value="" {{ 'selected' if not formdata.contact_on }}>~ Select ~</option>
+                            <option value="Email" {{ 'selected' if formdata.contact_on == 'Email' }}>Email</option>
+                            <option value="Tel" {{ 'selected' if formdata.contact_on == 'Tel' }}>Phone</option>
+                        </select>
+                    </div>
+
+                    <div class="wn-cta-row" style="margin-top:8px;">
+                        <button type="submit" class="btn btn-primary">Submit Report</button>
+                        <button type="reset" class="btn btn-danger">Clear Form</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    {% include 'footer.html' %}
+
+</body>
+</html>
