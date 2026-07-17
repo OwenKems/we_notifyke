@@ -34,7 +34,7 @@
                 {% if message %}<div class="wn-alert error">{{ message }}</div>{% endif %}
 
                 {% set formdata = formdata or {} %}
-                <form action="/home" method="post">
+                <form action="/home" method="post" enctype="multipart/form-data">
                     <div class="wn-row-2">
                         <div class="wn-field">
                             <label for="username">Your name</label>

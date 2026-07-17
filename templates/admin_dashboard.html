@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reported Cases — WeNotify Kenya</title>
+    <link rel="stylesheet" href="../static/css/bootstrap.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../static/css/style.css">
+    <style>
+        .case-table{ width:100%; border-collapse:collapse; background:var(--white); table-layout:fixed; }
+        .case-table th{
+            font-family: var(--font-mono); font-size:0.72rem; letter-spacing:0.08em;
+            text-transform:uppercase; color:var(--steel); text-align:left;
+            padding:12px 14px; border-bottom:2px solid var(--ink);
+            background: var(--paper-dim);
+        }
+        .case-table td{
+            padding:14px; border-bottom:1px dashed var(--steel-line);
+            font-size:0.92rem; vertical-align:top;
+            word-wrap: break-word; overflow-wrap: break-word; white-space: normal;
+        }
+        .case-table tr:hover td{ background: var(--paper); }
+        .case-no-cell{ font-family: var(--font-mono); font-size:0.8rem; color:var(--steel); white-space:nowrap; }
+        .desc-cell{ min-width:220px; }
+        .photo-cell img{ width:64px; height:64px; object-fit:cover; border-radius:4px; border:1px solid var(--steel-line); }
+        .photo-cell .none{ color:var(--steel); font-size:0.8rem; }
+        .empty-state{ text-align:center; padding:60px 20px; color:var(--steel); }
+        .table-scroll{ overflow-x:auto; border:1px solid var(--steel-line); border-radius:8px; }
+    </style>
+</head>
+<body>
+
+    <nav class="wn-nav">
+        <div class="wn-container">
+            <a href="/" class="wn-brand"><span class="dot"></span> WeNotify<span style="color:var(--amber)">KE</span></a>
+            <div class="wn-nav-links" style="display:flex;">
+                <span style="color:rgba(244,239,228,0.6); padding:10px 16px; font-size:0.8rem;">Badge #{{ badge_no }}</span>
+                <a href="{{ url_for('admin_logout') }}" class="report">Log Out</a>
+            </div>
+        </div>
+    </nav>
+
+    <section class="wn-hero" style="padding: 44px 0 40px;">
+        <div class="wn-container">
+            <p class="eyebrow">Officer panel</p>
+            <h1 style="font-size: clamp(1.8rem, 4vw, 2.8rem);">Reported Cases</h1>
+            <p class="lede" style="max-width:none;">{{ cases|length }} case{{ 's' if cases|length != 1 else '' }} on file.</p>
+        </div>
+    </section>
+
+    <section class="wn-section" style="padding-top:36px;">
+        <div class="wn-container">
+            {% if cases %}
+            <div class="table-scroll">
+                <table class="case-table">
+                    <thead>
+                        <tr>
+                            <th>Case #</th>
+                            <th>Reporter</th>
+                            <th>Contact</th>
+                            <th>What happened</th>
+                            <th>Where</th>
+                            <th>Date</th>
+                            <th>Photo</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for case in cases %}
+                        <tr>
+                            <td class="case-no-cell">KE-{{ '%04d'|format(case.id) }}</td>
+                            <td>
+                                {{ case.username }}<br>
+                                <span style="color:var(--steel); font-size:0.82rem;">ID {{ case.user_id }} &middot; {{ case.gender }}</span>
+                            </td>
+                            <td>
+                                {{ case.phone }}<br>
+                                <span style="color:var(--steel); font-size:0.82rem;">{{ case.email }} &middot; prefers {{ case.contact_on }}</span>
+                            </td>
+                            <td class="desc-cell">{{ case.event_desc }}</td>
+                            <td>{{ case.location }}, {{ case.county }}</td>
+                            <td class="case-no-cell">{{ case.event_date }}</td>
+                            <td class="photo-cell">
+                                {% if case.file_upload %}
+                                <a href="{{ url_for('static', filename='uploads/' + case.file_upload) }}" target="_blank">
+                                    <img src="{{ url_for('static', filename='uploads/' + case.file_upload) }}" alt="Photo submitted with this report">
+                                </a>
+                                {% else %}
+                                <span class="none">No photo</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <p class="eyebrow">Nothing here yet</p>
+                <p>No cases have been reported so far.</p>
+            </div>
+            {% endif %}
+        </div>
+    </section>
+
+</body>
+</html>
