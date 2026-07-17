@@ -158,6 +158,7 @@ def home():
                 contact_on=contact_on,
                 gender=gender,
                 photo=file)
+        
     else:
         return render_template("home.html")
         #TODO create a signin route that returns signin.html template
