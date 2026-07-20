@@ -29,6 +29,26 @@
         .photo-cell .none{ color:var(--steel); font-size:0.8rem; }
         .empty-state{ text-align:center; padding:60px 20px; color:var(--steel); }
         .table-scroll{ overflow-x:auto; border:1px solid var(--steel-line); border-radius:8px; }
+        .status-badge{
+            font-family: var(--font-mono); font-size:0.68rem; letter-spacing:0.06em;
+            text-transform:uppercase; font-weight:700; padding:4px 9px;
+            border-radius:3px; display:inline-block; margin-bottom:8px;
+        }
+        .status-Pending{ background:rgba(232,163,61,0.16); color:#9C6B1E; border:1px solid rgba(232,163,61,0.4); }
+        .status-In-Progress{ background:rgba(47,111,78,0.14); color:var(--green); border:1px solid rgba(47,111,78,0.35); }
+        .status-Resolved{ background:rgba(47,111,78,0.28); color:var(--green); border:1px solid var(--green); }
+        .status-Closed{ background:rgba(91,107,118,0.18); color:var(--steel); border:1px solid var(--steel-line); }
+        .status-form select{
+            font-family: var(--font-mono); font-size:0.78rem;
+            padding:6px 8px; border:1.5px solid var(--steel-line); border-radius:4px;
+            background: var(--paper); color:var(--ink); width:100%;
+        }
+        .status-form button{
+            font-family: var(--font-mono); font-size:0.7rem; text-transform:uppercase;
+            font-weight:700; letter-spacing:0.05em; padding:6px 10px; margin-top:6px;
+            background: var(--amber); color:var(--ink); border:none; border-radius:4px; cursor:pointer;
+        }
+        .status-form button:hover{ background: var(--ink); color:var(--amber); }
     </style>
 </head>
 <body>
@@ -65,6 +85,7 @@
                             <th>Where</th>
                             <th>Date</th>
                             <th>Photo</th>
+                            <th>Status</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -90,6 +111,18 @@
                                 {% else %}
                                 <span class="none">No photo</span>
                                 {% endif %}
+                            </td>
+                            <td>
+                                <span class="status-badge status-{{ (case.status or 'Pending')|replace(' ', '-') }}">{{ case.status or 'Pending' }}</span>
+                                <form class="status-form" action="{{ url_for('update_status', case_id=case.id) }}" method="post">
+                                    <select name="status">
+                                        <option value="Pending" {{ 'selected' if case.status == 'Pending' }}>Pending</option>
+                                        <option value="In Progress" {{ 'selected' if case.status == 'In Progress' }}>In Progress</option>
+                                        <option value="Resolved" {{ 'selected' if case.status == 'Resolved' }}>Resolved</option>
+                                        <option value="Closed" {{ 'selected' if case.status == 'Closed' }}>Closed</option>
+                                    </select>
+                                    <button type="submit">Update</button>
+                                </form>
                             </td>
                         </tr>
                         {% endfor %}

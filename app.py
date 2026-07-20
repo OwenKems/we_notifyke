@@ -8,6 +8,7 @@ import os
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 connection=pymysql.connect(host='localhost',user="root",password="",database="owenke")
+connection.autocommit(True)
 
 
 app=Flask(__name__)
@@ -50,12 +51,22 @@ def setup_admin_accounts():
         )
         connection.commit()
 
+    # add a status column to wenotify if it isn't there yet, so existing
+    # rows aren't broken by this feature being added later
     cursor.execute("SELECT COUNT(*) FROM admin_panel")
     if cursor.fetchone()[0] == 0:
         cursor.execute(
             "INSERT INTO admin_panel (chief_badge_no, password) VALUES (%s,%s)",
             ("CHIEF001", generate_password_hash("Chief@123"))
         )
+        connection.commit()
+
+    cursor.execute("""
+        SELECT COUNT(*) FROM information_schema.columns
+        WHERE table_schema = DATABASE() AND table_name = 'wenotify' AND column_name = 'status'
+    """)
+    if cursor.fetchone()[0] == 0:
+        cursor.execute("ALTER TABLE wenotify ADD COLUMN status VARCHAR(20) NOT NULL DEFAULT 'Pending'")
         connection.commit()
 
 setup_admin_accounts()
@@ -158,7 +169,6 @@ def home():
                 contact_on=contact_on,
                 gender=gender,
                 photo=file)
-        
     else:
         return render_template("home.html")
         #TODO create a signin route that returns signin.html template
@@ -243,6 +253,19 @@ def admin_dashboard():
     cursor.execute("select * from wenotify order by id desc")
     cases=cursor.fetchall()
     return render_template("admin_dashboard.html", cases=cases, badge_no=session['badge_no'])
+
+VALID_STATUSES = ["Pending", "In Progress", "Resolved", "Closed"]
+
+@app.route("/admin/update_status/<int:case_id>", methods=['POST'])
+def update_status(case_id):
+    # only officers who have actually logged in via /admin can do this
+    if 'badge_no' not in session:
+        return redirect(url_for('admin'))
+    new_status=request.form.get('status','')
+    if new_status in VALID_STATUSES:
+        cursor=connection.cursor()
+        cursor.execute("UPDATE wenotify SET status=%s WHERE id=%s", (new_status, case_id))
+    return redirect(url_for('admin_dashboard'))
 
 @app.route("/admin/logout")
 def admin_logout():
