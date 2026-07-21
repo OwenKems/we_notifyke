@@ -218,7 +218,7 @@ def login():
             return render_template("login.html",error="Invalid login.please try again")
         else:
               session['chief_badge_no']=chief_badge_no
-              return render_template("logoff.html")
+              return redirect(url_for('admin_dashboard'))
       else:
         return render_template("login.html")
     #   admin panel login
@@ -246,30 +246,64 @@ def admin():
 
 @app.route("/admin/dashboard")
 def admin_dashboard():
-    # only officers who have actually logged in via /admin can view this
-    if 'badge_no' not in session:
+    # officers OR the chief admin can view this - either session key is enough
+    if 'badge_no' not in session and 'chief_badge_no' not in session:
         return redirect(url_for('admin'))
+    is_senior='chief_badge_no' in session
     cursor=connection.cursor(pymysql.cursors.DictCursor)
-    cursor.execute("select * from wenotify order by id desc")
-    cases=cursor.fetchall()
-    return render_template("admin_dashboard.html", cases=cases, badge_no=session['badge_no'])
 
+    selected_status=request.args.get('status','All')
+    if selected_status in VALID_STATUSES:
+        cursor.execute("select * from wenotify where status=%s order by id desc", (selected_status,))
+    else:
+        selected_status='All'
+        cursor.execute("select * from wenotify order by id desc")
+    cases=cursor.fetchall()
+
+    # counts per status, for the filter tabs
+    cursor.execute("select status, count(*) as c from wenotify group by status")
+    counts_raw=cursor.fetchall()
+    counts={row['status']: row['c'] for row in counts_raw}
+    total_count=sum(counts.values())
+
+    return render_template("admin_dashboard.html",
+        cases=cases,
+        badge_no=session.get('badge_no') or session.get('chief_badge_no'),
+        is_senior=is_senior,
+        selected_status=selected_status,
+        counts=counts,
+        total_count=total_count,
+        valid_statuses=VALID_STATUSES)
+  
 VALID_STATUSES = ["Pending", "In Progress", "Resolved", "Closed"]
 
 @app.route("/admin/update_status/<int:case_id>", methods=['POST'])
 def update_status(case_id):
-    # only officers who have actually logged in via /admin can do this
-    if 'badge_no' not in session:
+    # officers OR the chief admin can update a case's status
+    if 'badge_no' not in session and 'chief_badge_no' not in session:
         return redirect(url_for('admin'))
     new_status=request.form.get('status','')
     if new_status in VALID_STATUSES:
         cursor=connection.cursor()
         cursor.execute("UPDATE wenotify SET status=%s WHERE id=%s", (new_status, case_id))
-    return redirect(url_for('admin_dashboard'))
+    keep_filter=request.form.get('current_filter','All')
+    return redirect(url_for('admin_dashboard', status=keep_filter))
+
+@app.route("/admin/delete_case/<int:case_id>", methods=['POST'])
+def delete_case(case_id):
+    # deleting a case is a senior/chief-admin-only action - a regular
+    # officer session is NOT enough, even if they're logged in
+    if 'chief_badge_no' not in session:   
+        return redirect(url_for('admin_dashboard'))
+    cursor=connection.cursor()
+    cursor.execute("DELETE FROM wenotify WHERE id=%s", (case_id,))
+    keep_filter=request.form.get('current_filter','All')
+    return redirect(url_for('admin_dashboard', status=keep_filter))
 
 @app.route("/admin/logout")
 def admin_logout():
     session.pop('badge_no', None)
+    session.pop('chief_badge_no', None)
     return redirect(url_for('admin'))
 
 app.run(debug=True)

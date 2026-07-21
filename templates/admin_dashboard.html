@@ -49,6 +49,23 @@
             background: var(--amber); color:var(--ink); border:none; border-radius:4px; cursor:pointer;
         }
         .status-form button:hover{ background: var(--ink); color:var(--amber); }
+        .btn-delete{
+            font-family: var(--font-mono); font-size:0.72rem; text-transform:uppercase;
+            font-weight:700; letter-spacing:0.05em; padding:7px 12px;
+            background: transparent; color:var(--red); border:1.5px solid var(--red);
+            border-radius:4px; cursor:pointer; transition: all 0.15s ease;
+        }
+        .btn-delete:hover{ background: var(--red); color:var(--white); }
+        .filter-tabs{ display:flex; gap:8px; flex-wrap:wrap; margin-bottom:24px; }
+        .filter-tab{
+            font-family: var(--font-mono); font-size:0.78rem; letter-spacing:0.04em;
+            text-transform:uppercase; padding:9px 16px; border-radius:5px;
+            border:1.5px solid var(--steel-line); background:var(--white); color:var(--steel);
+            transition: all 0.15s ease;
+        }
+        .filter-tab:hover{ border-color:var(--amber); color:var(--ink); }
+        .filter-tab.active{ background:var(--ink); border-color:var(--ink); color:var(--amber); font-weight:700; }
+        .filter-tab .count{ opacity:0.7; margin-left:4px; }
     </style>
 </head>
 <body>
@@ -57,7 +74,9 @@
         <div class="wn-container">
             <a href="/" class="wn-brand"><span class="dot"></span> WeNotify<span style="color:var(--amber)">KE</span></a>
             <div class="wn-nav-links" style="display:flex;">
-                <span style="color:rgba(244,239,228,0.6); padding:10px 16px; font-size:0.8rem;">Badge #{{ badge_no }}</span>
+                <span style="color:rgba(244,239,228,0.6); padding:10px 16px; font-size:0.8rem;">
+                    Badge #{{ badge_no }}{% if is_senior %} &middot; <span style="color:var(--amber);">Chief Admin</span>{% endif %}
+                </span>
                 <a href="{{ url_for('admin_logout') }}" class="report">Log Out</a>
             </div>
         </div>
@@ -67,11 +86,29 @@
         <div class="wn-container">
             <p class="eyebrow">Officer panel</p>
             <h1 style="font-size: clamp(1.8rem, 4vw, 2.8rem);">Reported Cases</h1>
-            <p class="lede" style="max-width:none;">{{ cases|length }} case{{ 's' if cases|length != 1 else '' }} on file.</p>
+            <p class="lede" style="max-width:none;">
+                {{ cases|length }} case{{ 's' if cases|length != 1 else '' }}
+                {% if selected_status != 'All' %}with status &ldquo;{{ selected_status }}&rdquo;{% else %}on file{% endif %}.
+            </p>
         </div>
     </section>
 
-    <section class="wn-section" style="padding-top:36px;">
+    <section class="wn-section" style="padding-top:36px; padding-bottom:0;">
+        <div class="wn-container">
+            <div class="filter-tabs">
+                <a href="{{ url_for('admin_dashboard', status='All') }}" class="filter-tab {{ 'active' if selected_status == 'All' }}">
+                    All <span class="count">{{ total_count }}</span>
+                </a>
+                {% for s in valid_statuses %}
+                <a href="{{ url_for('admin_dashboard', status=s) }}" class="filter-tab {{ 'active' if selected_status == s }}">
+                    {{ s }} <span class="count">{{ counts.get(s, 0) }}</span>
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+    <section class="wn-section" style="padding-top:0;">
         <div class="wn-container">
             {% if cases %}
             <div class="table-scroll">
@@ -86,6 +123,7 @@
                             <th>Date</th>
                             <th>Photo</th>
                             <th>Status</th>
+                            {% if is_senior %}<th>Delete</th>{% endif %}
                         </tr>
                     </thead>
                     <tbody>
@@ -115,6 +153,7 @@
                             <td>
                                 <span class="status-badge status-{{ (case.status or 'Pending')|replace(' ', '-') }}">{{ case.status or 'Pending' }}</span>
                                 <form class="status-form" action="{{ url_for('update_status', case_id=case.id) }}" method="post">
+                                    <input type="hidden" name="current_filter" value="{{ selected_status }}">
                                     <select name="status">
                                         <option value="Pending" {{ 'selected' if case.status == 'Pending' }}>Pending</option>
                                         <option value="In Progress" {{ 'selected' if case.status == 'In Progress' }}>In Progress</option>
@@ -124,6 +163,15 @@
                                     <button type="submit">Update</button>
                                 </form>
                             </td>
+                            {% if is_senior %}
+                            <td>
+                                <form action="{{ url_for('delete_case', case_id=case.id) }}" method="post"
+                                      onsubmit="return confirm('Permanently delete case KE-{{ '%04d'|format(case.id) }}? This cannot be undone.');">
+                                    <input type="hidden" name="current_filter" value="{{ selected_status }}">
+                                    <button type="submit" class="btn-delete">Delete</button>
+                                </form>
+                            </td>
+                            {% endif %}
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -132,7 +180,7 @@
             {% else %}
             <div class="empty-state">
                 <p class="eyebrow">Nothing here yet</p>
-                <p>No cases have been reported so far.</p>
+                <p>{% if selected_status != 'All' %}No cases currently have status &ldquo;{{ selected_status }}&rdquo;.{% else %}No cases have been reported so far.{% endif %}</p>
             </div>
             {% endif %}
         </div>
