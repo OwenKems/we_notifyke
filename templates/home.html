@@ -43,18 +43,18 @@
                     <div class="wn-row-2">
                         <div class="wn-field">
                             <label for="username">Your name</label>
-                            <input type="text" id="username" placeholder="e.g. Jane Wanjiru" name="username" value="{{ formdata.username or '' }}">
+                            <input type="text" id="username" placeholder="e.g. Jane Wanjiru" name="username" value="{{ formdata.username or '' }}" required>
                         </div>
                         <div class="wn-field">
                             <label for="user_id">ID number</label>
-                            <input type="number" id="user_id" placeholder="National ID" maxlength="8" name="user_id" value="{{ formdata.user_id or '' }}">
+                            <input type="number" id="user_id" placeholder="National ID" maxlength="8" name="user_id" value="{{ formdata.user_id or '' }}" required>
                         </div>
                     </div>
 
                     <div class="wn-row-2">
                         <div class="wn-field">
                             <label for="phone">Phone number</label>
-                            <input type="tel" id="phone" placeholder="2547XXXXXXXX" name="phone" value="{{ formdata.phone or '' }}">
+                            <input type="tel" id="phone" placeholder="2547XXXXXXXX" name="phone" value="{{ formdata.phone or '' }}" required>
                         </div>
                         <div class="wn-field">
                             <label for="email">Email (optional)</label>
